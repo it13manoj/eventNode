@@ -7,6 +7,7 @@ const bodyParser= require("body-parser")
 const { PORT } = process.env
 const sequelize = require("./db/conenction");
 const users  = require("./router/index")
+const admin = require("./router/Admin")
 
 
 app.use(cors({
@@ -22,6 +23,12 @@ app.use("/uploads", express.static("uploads"));
 
 app.use("/api/v1/users",users.roleRoutes);
 app.use("/api/v1/users",users.userRouters);
+
+
+
+app.use("/api/v1/admin",admin.Category)
+app.use("/api/v1/admin",admin.SubCategory)
+
 
 http.createServer(app).listen(PORT,(req,res)=>{
     console.log("Server is running on "+PORT);
