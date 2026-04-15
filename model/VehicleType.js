@@ -1,8 +1,7 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../db/conenction");
-const Category = require("./Category");
 
-const SubCategory = sequelize.define("subcategories", {
+const VehicleType = sequelize.define("vehicle_type", {
     id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
@@ -12,38 +11,34 @@ const SubCategory = sequelize.define("subcategories", {
         type: DataTypes.STRING,
         allowNull: false
     },
-    categories_id: {
+    wheel: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    capacity: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        references: {
-            model: Category,
-            key: "id"
-        }
     },
-    code: {
-        type: DataTypes.STRING,
+
+    fuel_type: {
+        type: DataTypes.ENUM("diesel", "petrol", "cng", "electric"),
+        allowNull: false,
+        defaultValue: "diesel",
+    },
+    isActive: {
+        type: DataTypes.ENUM("0", "1"),
+        defaultValue: "1",
         allowNull: false
     },
     description: {
         type: DataTypes.TEXT,
-        allowNull: false
+        allowNull: true
     },
-    status: {
-        type: DataTypes.ENUM("0", "1"),
-        defaultValue:"1",
-        allowNull: false
-    }
+
 }, {
     timestamps: true,
     createdAt: "created_at",
     updatedAt: "updated_at"
 });
 
-
-SubCategory.belongsTo(Category, {
-    foreignKey: "categories_id",
-    as: "categories"
-});
-
-
-module.exports = SubCategory;
+module.exports = VehicleType;

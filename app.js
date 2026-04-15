@@ -28,6 +28,13 @@ app.use("/api/v1/users",users.userRouters);
 
 app.use("/api/v1/admin",admin.Category)
 app.use("/api/v1/admin",admin.SubCategory)
+app.use("/api/v1/admin",admin.Inventories)
+app.use("/api/v1/admin",admin.Events)
+app.use("/api/v1/admin",admin.WareHouse)
+app.use("/api/v1/admin",admin.VehicleType)
+app.use("/api/v1/admin",admin.Vehicle)
+
+
 
 
 http.createServer(app).listen(PORT,(req,res)=>{

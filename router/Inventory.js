@@ -1,0 +1,17 @@
+const express = require("express");
+const { create, update, find, deletes, findByPk, findBycategories } = require("../controller/Admin/Inventory");
+const Route = express.Router();
+
+
+Route.post("/Inverntory/create", create)
+Route.put("/Inverntory/update/:id",update)
+Route.get("/Inverntory/find",find)
+Route.delete("/Inverntory/delete/:id", deletes)
+Route.get("/Inverntory/findByPk/:id", findByPk)
+Route.get("/Inverntory/findBycategories/:id", findBycategories)
+
+
+
+
+
+module.exports = Route

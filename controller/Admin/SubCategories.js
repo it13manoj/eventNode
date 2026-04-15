@@ -1,3 +1,4 @@
+const Category = require("../../model/Category")
 const SubCategories = require("../../model/SubCategory")
 const { ERROR } = require("../../Response/Error")
 const { SUCCESS } = require("../../Response/Success")
@@ -5,10 +6,12 @@ const { SUCCESS } = require("../../Response/Success")
 
 exports.create = async (req,res) =>{
     try{
-            const { name, categories_id} = req.body
+            const { name, categories_id, code, description} = req.body
             const subCategories = await SubCategories.create({
                 name:name,
-                categories_id:categories_id
+                categories_id:categories_id,
+                code:code, 
+                description:description
             })
 
             res.send(SUCCESS("Successfully Created SubCategories!", subCategories))
@@ -19,22 +22,41 @@ exports.create = async (req,res) =>{
 
 exports.finds = async (req,res) =>{
         try{
-            const { id } = req.body
-             const subCategories = await SubCategories.findAll({
-                where:{id:id}
-             })
+             const subCategories = await SubCategories.findAll()
              res.send(SUCCESS("Records",subCategories))
         }catch(error){
             res.send(ERROR(error))
         }
 }
 
+exports.findByid = async (req,res)=>{
+    try{
+        const {id} = req.params
+         const results = await SubCategories.findAll({
+            attributes: ['id', 'name', 'categories_id'],
+            where: {
+                categories_id: id
+            },
+            include: [
+                {
+                    model: Category,
+                    as: "categories"
+                }
+            ]
+        });
+
+        res.send(SUCCESS("records", results))
+    }catch(error){
+        res.send(ERROR(error))
+    }
+}
+
 exports.updates = async (req,res) =>{
     try{
          const {id} = req.params
-         const {name, categories_id} = req.body
+         const {name, categories_id, code, description} = req.body
          const subCategories = await SubCategories.update({
-            name:name, categories_id:categories_id
+            name:name, categories_id:categories_id, code:code, description:description
          },{
             where:{id:id}
          })

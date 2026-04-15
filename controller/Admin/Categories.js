@@ -4,8 +4,8 @@ const { SUCCESS } = require("../../Response/Success")
 
 exports.create = async (req,res) =>{
     try{
-        const {name} = req.body
-        const category = await Categories.create({name:name})
+        const {name, code, description} = req.body
+        const category = await Categories.create({name:name, code:code, description:description})
         res.send(SUCCESS("successfully created!" , category))
     }catch(error){
         res.send(ERROR(error))
@@ -23,11 +23,24 @@ exports.find = async (req,res) =>{
 }
 
 
+
+exports.findByid = async (req,res) =>{
+        try{
+            const { id } = req.params
+            const categories = await Categories.findByPk(id)
+            res.send(SUCCESS("successfully records!", categories));
+        }catch(error){  
+            res.send(error)
+        }
+}
+
+
 exports.updates = async (req,res) =>{
         try{
-            const { id } = req.body
+            const { id } = req.params
+            const { status, description , code} = req.body
             const category =  await Categories.update({
-                name
+                 status, description , code
             },{
                 where:{id:id}
             })
@@ -41,6 +54,7 @@ exports.updates = async (req,res) =>{
 
 exports.deletes = async (req,res) =>{
      try{
+        const { id } = req.params
             const categories = await Categories.destroy({
                 where:{id:id}
             })
