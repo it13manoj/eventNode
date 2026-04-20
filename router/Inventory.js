@@ -9,7 +9,7 @@ Route.get("/Inverntory/find",find)
 Route.delete("/Inverntory/delete/:id", deletes)
 Route.get("/Inverntory/findByPk/:id", findByPk)
 Route.get("/Inverntory/findBycategories/:id", findBycategories)
-
+Route.get("/Inverntory/findBycategoriesAndSubCategories/:cid/:sid", findBycategoriesAndSubCategories)
 
 
 

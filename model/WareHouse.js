@@ -9,7 +9,7 @@ const wareHouse = sequelize.define("ware_house", {
     },
 
     name: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         allowNull: true
     },
     code: {
@@ -29,7 +29,7 @@ const wareHouse = sequelize.define("ware_house", {
         allowNull: true
     },
     contact_number: {
-        type: DataTypes.BIGINT,
+        type: DataTypes.STRING,
         allowNull: true
     },
     gst_number: {
@@ -45,7 +45,7 @@ const wareHouse = sequelize.define("ware_house", {
         allowNull: true,
     },
     google_link: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         allowNull: true,
     },
 }, {

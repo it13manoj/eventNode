@@ -1,15 +1,16 @@
 const Category = require("../../model/Category")
 const Inventories = require("../../model/Inventory")
 const SubCategory = require("../../model/SubCategory")
+const wareHouse = require("../../model/WareHouse")
 const { ERROR } = require("../../Response/Error")
 const { SUCCESS } = require("../../Response/Success")
 
 
 exports.create = async (req, res) => {
     try {
-        const { width, height, color, quantity, quality, price, categories_id, sub_categories_id } = req.body
+        const { width, height, color, quantity, quality, price, categories_id, sub_categories_id, ware_house_id } = req.body
         const results = await Inventories.create({
-            width, height, color, quantity, quality, price, categories_id, sub_categories_id
+            width, height, color, quantity, quality, price, categories_id, sub_categories_id, ware_house_id
         })
         res.send(SUCCESS("Successfully Created!", results))
     } catch (error) {
@@ -20,9 +21,9 @@ exports.create = async (req, res) => {
 exports.update = async (req, res) => {
     try {
         const { id } = req.params
-        const { width, height, color, quantity, quality, price, categories_id, sub_categories_id } = req.body
+        const { width, height, color, quantity, quality, price, categories_id, sub_categories_id ,ware_house_id } = req.body
         const results = await Inventories.update({
-            width, height, color, quantity, quality, price, categories_id, sub_categories_id
+            width, height, color, quantity, quality, price, categories_id, sub_categories_id ,ware_house_id
         }, {
             where: {
                 id: id
@@ -46,7 +47,8 @@ exports.find = async (req, res) => {
                 'quality',
                 'price',
                 'categories_id',
-                'sub_categories_id'
+                'sub_categories_id',
+                'ware_house_id'
             ],
             include: [
                 {
@@ -56,6 +58,10 @@ exports.find = async (req, res) => {
                 {
                     model: SubCategory,
                     as: "subCategories"
+                },
+                {
+                    model: wareHouse,
+                    as: "WareHouse"
                 }
             ]
         });
@@ -99,6 +105,10 @@ exports.findBycategories = async (req, res) => {
                 {
                     model: SubCategory,
                     as: "subCategories"
+                },
+                 {
+                    model: wareHouse,
+                    as: "WareHouse"
                 }
             ],
             where: {
@@ -110,6 +120,50 @@ exports.findBycategories = async (req, res) => {
         res.send(ERROR(error))
     }
 }
+
+
+exports.findBycategoriesAndSubCategories = async (req, res) => {
+    try {
+        const { cid,sid } = req.params
+        const results = await Inventories.findAll({
+            attributes: [
+                'id',
+                'width',
+                'height',
+                'color',
+                'quantity',
+                'quality',
+                'price',
+                'categories_id',
+                'sub_categories_id'
+            ],
+            include: [
+                {
+                    model: Category,
+                    as: "categories"
+                },
+                {
+                    model: SubCategory,
+                    as: "subCategories"
+                },
+                 {
+                    model: wareHouse,
+                    as: "WareHouse"
+                }
+            ],
+            where: {
+                categories_id: cid, 
+                sub_categories_id:sid
+            }
+        })
+        res.send(SUCCESS("Successfully!", results))
+    } catch (error) {
+        res.send(ERROR(error))
+    }
+}
+
+
+
 
 exports.deletes = async (req, res) => {
     try {

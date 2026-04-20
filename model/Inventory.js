@@ -2,6 +2,7 @@ const { DataTypes } = require("sequelize");
 const sequelize = require("../db/conenction");
 const Category = require("./Category");
 const SubCategory = require("./SubCategory");
+const wareHouse = require("./WareHouse");
 
 const Inventory = sequelize.define("invertories", {
     id: {
@@ -9,7 +10,7 @@ const Inventory = sequelize.define("invertories", {
         autoIncrement: true,
         primaryKey: true
     },
- 
+
     width: {
         type: DataTypes.INTEGER,
         allowNull: true
@@ -35,6 +36,14 @@ const Inventory = sequelize.define("invertories", {
         allowNull: true
     },
 
+    ware_house_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: wareHouse,
+            key: "id"
+        }
+    },
     categories_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -67,6 +76,11 @@ Inventory.belongsTo(Category, {
 Inventory.belongsTo(SubCategory, {
     foreignKey: "sub_categories_id",
     as: "subCategories"
+});
+
+Inventory.belongsTo(wareHouse, {
+    foreignKey: "ware_house_id",
+    as: "WareHouse"
 });
 
 module.exports = Inventory;
