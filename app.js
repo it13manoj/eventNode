@@ -33,7 +33,7 @@ app.use("/api/v1/admin",admin.Events)
 app.use("/api/v1/admin",admin.WareHouse)
 app.use("/api/v1/admin",admin.VehicleType)
 app.use("/api/v1/admin",admin.Vehicle)
-
+app.use("/api/v1/admin",admin.TeamAssign)
 
 
 

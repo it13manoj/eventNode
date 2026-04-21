@@ -1,5 +1,5 @@
 const express = require("express");
-const { create, update, find, deletes, findByPk, findBycategories } = require("../controller/Admin/Inventory");
+const { create, update, find, deletes, findByPk, findBycategories, findBycategoriesAndSubCategories } = require("../controller/Admin/Inventory");
 const Route = express.Router();
 
 

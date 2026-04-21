@@ -2,6 +2,8 @@ const { DataTypes } = require("sequelize");
 const sequelize = require("../db/conenction");
 const bcrypt = require("bcryptjs");
 const Role = require("./Role");
+const TeamAssign = require("./TeamAssign");
+const TeamAssignUser = require("./TeamAssignUser");
 
 const User = sequelize.define("users", {
     id: {
@@ -98,5 +100,6 @@ User.belongsTo(Role, {
     foreignKey: "role_id",
     as: "role"
 });
+
 
 module.exports = User;;

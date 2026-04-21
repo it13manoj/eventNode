@@ -5,11 +5,11 @@ const Events = require("./Events")
 const WareHouse = require("./WareHouse")
 const VehicleType = require("./VehicleType")
 const Vehicle = require("./Vehicle")
-
+const TeamAssign = require("./TeamAssign")
 
 
 
 
 module.exports ={
-    Category, SubCategory, Inventories, Events, WareHouse, VehicleType, Vehicle
+    Category, SubCategory, Inventories, Events, WareHouse, VehicleType, Vehicle, TeamAssign
 }
