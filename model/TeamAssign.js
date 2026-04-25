@@ -50,6 +50,8 @@ const TeamAssign = sequelize.define(
             type: DataTypes.TIME,
             allowNull: false,
         },
+
+
         stockLocation: {
             type: DataTypes.INTEGER,
             allowNull: false,
@@ -63,7 +65,10 @@ const TeamAssign = sequelize.define(
     timestamps: true,
 })
 
-
+TeamAssign.hasMany(TeamAssignUser, {
+  foreignKey: "team_assign_id",
+  as: "TeamAssignUser"
+});
 
 
 module.exports = TeamAssign;

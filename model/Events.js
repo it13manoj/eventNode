@@ -1,5 +1,7 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../db/conenction");
+const Category = require("./Category");
+const SubCategory = require("./SubCategory");
 
 
 const Events = sequelize.define("events", {
@@ -48,10 +50,38 @@ const Events = sequelize.define("events", {
         type: DataTypes.INTEGER,
         allowNull: false
     },
+    categories_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: Category,
+            key: "id",
+        },
+    },
+    sub_categories_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: SubCategory,
+            key: "id",
+        },
+    },
+    quntites: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    width: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    height: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
 
-     status: {
-        type: DataTypes.ENUM("0","1","2","3","4"),
-        defaultValue:"1",
+    status: {
+        type: DataTypes.ENUM("0", "1", "2", "3", "4"),
+        defaultValue: "1",
         allowNull: false
     },
 

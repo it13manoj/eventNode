@@ -1,5 +1,7 @@
+const Events = require("../../model/Events");
 const TeamAssign = require("../../model/TeamAssign");
-const TeamAssignUser = require("../../model/TeamAssignUser")
+const TeamAssignUser = require("../../model/TeamAssignUser");
+const User = require("../../model/User");
 
 
 
@@ -13,6 +15,8 @@ exports.createTeamAssign = async (req, res) => {
             date,
             time,
             venue,
+            location,
+            installation,
             stockLocation,
         } = req.body;
 
@@ -23,6 +27,8 @@ exports.createTeamAssign = async (req, res) => {
             date,
             time,
             venue,
+            location,
+            installation,
             stockLocation,
         });
 
@@ -33,6 +39,35 @@ exports.createTeamAssign = async (req, res) => {
         }));
 
         const assigenTeams = await TeamAssignUser.bulkCreate(data);
+
+        res.json({ success: true, data: event });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+
+exports.find = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const event = await TeamAssign.findOne({
+            where: { event_id: id },
+            include: [{
+                model: TeamAssignUser,
+                as: "TeamAssignUser",
+               
+            }],
+              order:[["id","desc"]]
+        });
+
+        await Events.update({
+            status:"1",
+            where:{
+                id:id
+            }
+        })
+
 
         res.json({ success: true, data: event });
     } catch (err) {

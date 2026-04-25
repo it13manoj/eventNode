@@ -21,9 +21,9 @@ exports.create = async (req, res) => {
 exports.update = async (req, res) => {
     try {
         const { id } = req.params
-        const { width, height, color, quantity, quality, price, categories_id, sub_categories_id ,ware_house_id } = req.body
+        const { width, height, color, quantity, quality, price, categories_id, sub_categories_id, ware_house_id } = req.body
         const results = await Inventories.update({
-            width, height, color, quantity, quality, price, categories_id, sub_categories_id ,ware_house_id
+            width, height, color, quantity, quality, price, categories_id, sub_categories_id, ware_house_id
         }, {
             where: {
                 id: id
@@ -106,7 +106,7 @@ exports.findBycategories = async (req, res) => {
                     model: SubCategory,
                     as: "subCategories"
                 },
-                 {
+                {
                     model: wareHouse,
                     as: "WareHouse"
                 }
@@ -124,7 +124,7 @@ exports.findBycategories = async (req, res) => {
 
 exports.findBycategoriesAndSubCategories = async (req, res) => {
     try {
-        const { cid,sid } = req.params
+        const { cid, sid } = req.params
         const results = await Inventories.findAll({
             attributes: [
                 'id',
@@ -146,14 +146,14 @@ exports.findBycategoriesAndSubCategories = async (req, res) => {
                     model: SubCategory,
                     as: "subCategories"
                 },
-                 {
+                {
                     model: wareHouse,
                     as: "WareHouse"
                 }
             ],
             where: {
-                categories_id: cid, 
-                sub_categories_id:sid
+                categories_id: cid,
+                sub_categories_id: sid
             }
         })
         res.send(SUCCESS("Successfully!", results))
@@ -161,6 +161,47 @@ exports.findBycategoriesAndSubCategories = async (req, res) => {
         res.send(ERROR(error))
     }
 }
+
+
+exports.calculate = async (req, res) => {
+    try {
+        const { catId, scatId } = req.params;
+
+        console.log(req.params);
+
+        const quntites = await Inventories.sum('quantity', {
+            where: {
+                categories_id: catId,
+                sub_categories_id: scatId,
+                width: null,
+                height: null
+            }
+        });
+
+        const totalHeight = await Inventories.sum('height', {
+            where: {
+                categories_id: catId,
+                sub_categories_id: scatId,
+            }
+        });
+
+        const totalWidth = await Inventories.sum('width', {
+            where: {
+                categories_id: catId,
+                sub_categories_id: scatId,
+            }
+        });
+
+        res.json({
+            quntites: quntites,
+            height: totalHeight,
+            width: totalWidth
+        });
+    } catch (err) {
+        console.error(err);
+        res.send("failed");
+    }
+};
 
 
 

@@ -59,4 +59,6 @@ const TeamAssignUser = sequelize.define(
     }
 );
 
+
+
 module.exports = TeamAssignUser;

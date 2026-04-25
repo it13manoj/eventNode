@@ -1,5 +1,5 @@
 const express = require("express");
-const { create, update, find, deletes, findByPk, findBycategories, findBycategoriesAndSubCategories } = require("../controller/Admin/Inventory");
+const { create, update, find, deletes, findByPk, findBycategories, findBycategoriesAndSubCategories, calculate } = require("../controller/Admin/Inventory");
 const Route = express.Router();
 
 
@@ -10,7 +10,7 @@ Route.delete("/Inverntory/delete/:id", deletes)
 Route.get("/Inverntory/findByPk/:id", findByPk)
 Route.get("/Inverntory/findBycategories/:id", findBycategories)
 Route.get("/Inverntory/findBycategoriesAndSubCategories/:cid/:sid", findBycategoriesAndSubCategories)
-
+Route.get("/Inverntory/calculate/:catId/:scatId", calculate)
 
 
 
