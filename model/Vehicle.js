@@ -12,6 +12,10 @@ const Vehicle = sequelize.define("vehicles", {
         type: DataTypes.STRING,
         allowNull: false
     },
+    vehicle_number: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
     vehicle_type_id: {
         type: DataTypes.INTEGER,
         allowNull: false,

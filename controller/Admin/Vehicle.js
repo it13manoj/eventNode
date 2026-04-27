@@ -5,7 +5,7 @@ const { SUCCESS } = require("../../Response/Success")
 
 
 
-exports.create = async (res, req) => {
+exports.create = async (req, res) => {
     try {
         const { name, vehicle_type_id, owner_agency, contact, driver_contact, ownershiptype, load_capacity, commission, insurance } = req.body
         const image = req.file.fileName;
@@ -37,7 +37,9 @@ exports.update = async (res, req) => {
 }
 
 
-exports.find = async (res, req) => {
+exports.find = async (req, res) => {
+    
+    
     try {
         const results = await Vehicle.findAll({
             include: [
