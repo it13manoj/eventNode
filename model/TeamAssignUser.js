@@ -60,5 +60,20 @@ const TeamAssignUser = sequelize.define(
 );
 
 
+// TeamAssignUser.belongsTo(User, {
+//     foreignKey: "user_id",
+//     as: "users"
+// });
+
+// TeamAssign.hasMany(TeamAssignUser, {
+//     foreignKey: "team_assign_id",
+//     as: "TeamAssignUser"
+// });
+
+// TeamAssignUser -> TeamAssign
+// TeamAssignUser.belongsTo(TeamAssign, {
+//     foreignKey: "team_assign_id"
+// });
+
 
 module.exports = TeamAssignUser;

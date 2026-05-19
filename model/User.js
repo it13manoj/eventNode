@@ -2,8 +2,6 @@ const { DataTypes } = require("sequelize");
 const sequelize = require("../db/conenction");
 const bcrypt = require("bcryptjs");
 const Role = require("./Role");
-const TeamAssign = require("./TeamAssign");
-const TeamAssignUser = require("./TeamAssignUser");
 
 const User = sequelize.define("users", {
     id: {
@@ -16,6 +14,14 @@ const User = sequelize.define("users", {
         allowNull: false
     },
     contact: {
+        type: DataTypes.STRING,
+        unique: true
+    },
+    contact2: {
+        type: DataTypes.STRING,
+        unique: true
+    },
+    contact3: {
         type: DataTypes.STRING,
         unique: true
     },
@@ -38,6 +44,31 @@ const User = sequelize.define("users", {
     },
     password: {
         type: DataTypes.STRING
+    },
+    sifting_type: {
+        type: DataTypes.INTEGER,
+        allowNull: true
+    },
+    base_pay: {
+        type: DataTypes.INTEGER,
+        allowNull: true
+    },
+    insurance: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true
+    },
+    adharcard_front: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    adharcard_back: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+
+    insurance_pic: {
+        type: DataTypes.STRING,
+        allowNull: true
     },
     img: {
         type: DataTypes.STRING,
@@ -100,6 +131,5 @@ User.belongsTo(Role, {
     foreignKey: "role_id",
     as: "role"
 });
-
 
 module.exports = User;;

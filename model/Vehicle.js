@@ -70,7 +70,7 @@ const Vehicle = sequelize.define("vehicles", {
 
 Vehicle.belongsTo(VehicleType, {
     foreignKey: "vehicle_type_id",
-    as: "vehicles"
+    as: "vehiclesTypes"
 });
 
 

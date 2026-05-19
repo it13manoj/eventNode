@@ -28,6 +28,10 @@ const SubCategory = sequelize.define("subcategories", {
         type: DataTypes.TEXT,
         allowNull: false
     },
+    is_enable: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false
+    },
     status: {
         type: DataTypes.ENUM("0", "1"),
         defaultValue:"1",

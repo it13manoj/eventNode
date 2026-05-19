@@ -2,6 +2,7 @@ const { DataTypes } = require("sequelize");
 const sequelize = require("../db/conenction");
 const Category = require("./Category");
 const SubCategory = require("./SubCategory");
+const BookedEvents = require("./BookedEvents");
 
 
 const Events = sequelize.define("events", {
@@ -9,6 +10,10 @@ const Events = sequelize.define("events", {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true
+    },
+    design_id:{
+        type:DataTypes.INTEGER,
+        allowNull:true
     },
     c_name: {
         type: DataTypes.STRING,
@@ -68,15 +73,15 @@ const Events = sequelize.define("events", {
     },
     quntites: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: true
     },
     width: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: true
     },
     height: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: true
     },
 
     status: {
@@ -90,6 +95,15 @@ const Events = sequelize.define("events", {
     createdAt: "created_at",
     updatedAt: "updated_at"
 });
+
+
+// BookedEvents.hasMany(Events,{
+//     foreignKey: "event_id"
+// })
+
+// BookedEvents.belongsTo(Events, {
+//   foreignKey: "event_id"
+// });
 
 
 module.exports = Events;

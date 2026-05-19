@@ -93,3 +93,16 @@ exports.update = async (req, res) => {
         res.send(err)
     }
 }
+exports.findByPk = async (req, res) => {
+    try {
+
+        const { id } = req.users;
+
+        const usersRecords = await User.findByPk();
+
+        res.send(SUCCESS("User Records", usersRecords));
+
+    } catch (err) {
+        res.send(ERROR(err));
+    }
+};

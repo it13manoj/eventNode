@@ -1,9 +1,7 @@
-const Events = require("../../model/Events");
 const TeamAssign = require("../../model/TeamAssign");
-const TeamAssignUser = require("../../model/TeamAssignUser");
+const TeamAssignUser = require("../../model/TeamAssignUser")
+const Events = require("../../model/Events");
 const User = require("../../model/User");
-
-
 
 exports.createTeamAssign = async (req, res) => {
     try {
@@ -15,8 +13,6 @@ exports.createTeamAssign = async (req, res) => {
             date,
             time,
             venue,
-            location,
-            installation,
             stockLocation,
         } = req.body;
 
@@ -27,8 +23,6 @@ exports.createTeamAssign = async (req, res) => {
             date,
             time,
             venue,
-            location,
-            installation,
             stockLocation,
         });
 
@@ -39,6 +33,15 @@ exports.createTeamAssign = async (req, res) => {
         }));
 
         const assigenTeams = await TeamAssignUser.bulkCreate(data);
+        await Events.update(
+            { status: "1" },   // values to update
+            {
+                where: {
+                    id: event_id
+                }
+            }
+        );
+
 
         res.json({ success: true, data: event });
     } catch (err) {
@@ -47,26 +50,29 @@ exports.createTeamAssign = async (req, res) => {
 };
 
 
+
+
 exports.find = async (req, res) => {
     try {
         const { id } = req.params;
 
         const event = await TeamAssign.findOne({
             where: { event_id: id },
-            include: [{
-                model: TeamAssignUser,
-                as: "TeamAssignUser",
-               
-            }],
-              order:[["id","desc"]]
+            include: [
+                {
+                    model: TeamAssignUser,
+                    as: "TeamAssignUser",
+                    include: [
+                        {
+                            model: User,
+                            as: "users"
+                        }
+                    ]
+                }
+            ],
+            order: [["id", "desc"]]
         });
 
-        await Events.update({
-            status:"1",
-            where:{
-                id:id
-            }
-        })
 
 
         res.json({ success: true, data: event });

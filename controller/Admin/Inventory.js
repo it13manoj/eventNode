@@ -1,221 +1,569 @@
-const Category = require("../../model/Category")
-const Inventories = require("../../model/Inventory")
-const SubCategory = require("../../model/SubCategory")
-const wareHouse = require("../../model/WareHouse")
-const { ERROR } = require("../../Response/Error")
-const { SUCCESS } = require("../../Response/Success")
+const Category = require("../../model/Category");
+const Inventories = require("../../model/Inventory");
+const SubCategory = require("../../model/SubCategory");
+const WareHouse = require("../../model/WareHouse");
 
+const InventoryVertical = require("../../model/InventoryVertical");
+const InventoryHorizontal = require("../../model/InventoryHorizontal");
+
+const Items = require("../../model/Items");
+
+const { ERROR } = require("../../Response/Error");
+const { SUCCESS } = require("../../Response/Success");
+
+// ======================================================
+// CREATE
+// ======================================================
 
 exports.create = async (req, res) => {
-    try {
-        const { width, height, color, quantity, quality, price, categories_id, sub_categories_id, ware_house_id } = req.body
-        const results = await Inventories.create({
-            width, height, color, quantity, quality, price, categories_id, sub_categories_id, ware_house_id
+  try {
+    const {
+      vertical_data,
+      horizontal_data,
+      ...inventoryData
+    } = req.body;
+
+    // ================= INVENTORY =================
+
+    const inventory = await Inventories.create(
+      inventoryData
+    );
+
+    // ================= VERTICAL =================
+
+    if (
+      inventoryData.vertical_enabled &&
+      vertical_data &&
+      vertical_data.length > 0
+    ) {
+      const verticalPayload = vertical_data.map(
+        (row) => ({
+          inventory_id: inventory.id,
+          size: row.size,
+          quantity: row.quantity,
+          unit: row.unit,
         })
-        res.send(SUCCESS("Successfully Created!", results))
-    } catch (error) {
-        res.send(ERROR(error))
+      );
+
+      await InventoryVertical.bulkCreate(
+        verticalPayload
+      );
     }
-}
+
+    // ================= HORIZONTAL =================
+
+    if (
+      inventoryData.horizontal_enabled &&
+      horizontal_data &&
+      horizontal_data.length > 0
+    ) {
+      const horizontalPayload =
+        horizontal_data.map((row) => ({
+          inventory_id: inventory.id,
+          size: row.size,
+          quantity: row.quantity,
+          unit: row.unit,
+        }));
+
+      await InventoryHorizontal.bulkCreate(
+        horizontalPayload
+      );
+    }
+
+    const results =
+      await Inventories.findByPk(inventory.id, {
+        include: [
+          {
+            model: Category,
+            as: "categories",
+          },
+          {
+            model: SubCategory,
+            as: "subCategories",
+          },
+          {
+            model: WareHouse,
+            as: "wareHouse",
+          },
+          {
+            model: InventoryVertical,
+            as: "verticalSizes",
+          },
+          {
+            model: InventoryHorizontal,
+            as: "horizontalSizes",
+          },
+        ],
+      });
+
+    res.send(
+      SUCCESS(
+        "Inventory created successfully!",
+        results
+      )
+    );
+  } catch (error) {
+    console.log(error);
+
+    res.send(ERROR(error.message));
+  }
+};
+
+// ======================================================
+// UPDATE
+// ======================================================
 
 exports.update = async (req, res) => {
-    try {
-        const { id } = req.params
-        const { width, height, color, quantity, quality, price, categories_id, sub_categories_id, ware_house_id } = req.body
-        const results = await Inventories.update({
-            width, height, color, quantity, quality, price, categories_id, sub_categories_id, ware_house_id
-        }, {
-            where: {
-                id: id
-            }
+  try {
+    const { id } = req.params;
+
+    const {
+      vertical_data,
+      horizontal_data,
+      ...inventoryData
+    } = req.body;
+
+    // ================= UPDATE INVENTORY =================
+
+    await Inventories.update(inventoryData, {
+      where: {
+        id: id,
+      },
+    });
+
+    // ================= DELETE OLD =================
+
+    await InventoryVertical.destroy({
+      where: {
+        inventory_id: id,
+      },
+    });
+
+    await InventoryHorizontal.destroy({
+      where: {
+        inventory_id: id,
+      },
+    });
+
+    // ================= INSERT NEW VERTICAL =================
+
+    if (
+      inventoryData.vertical_enabled &&
+      vertical_data &&
+      vertical_data.length > 0
+    ) {
+      const verticalPayload = vertical_data.map(
+        (row) => ({
+          inventory_id: id,
+          size: row.size,
+          quantity: row.quantity,
+          unit: row.unit,
         })
-        res.send(SUCCESS("Successfully Update!", results))
-    } catch (error) {
-        res.send(ERROR(error))
+      );
+
+      await InventoryVertical.bulkCreate(
+        verticalPayload
+      );
     }
-}
+
+    // ================= INSERT NEW HORIZONTAL =================
+
+    if (
+      inventoryData.horizontal_enabled &&
+      horizontal_data &&
+      horizontal_data.length > 0
+    ) {
+      const horizontalPayload =
+        horizontal_data.map((row) => ({
+          inventory_id: id,
+          size: row.size,
+          quantity: row.quantity,
+          unit: row.unit,
+        }));
+
+      await InventoryHorizontal.bulkCreate(
+        horizontalPayload
+      );
+    }
+
+    const results = await Inventories.findByPk(id, {
+      include: [
+        {
+          model: Category,
+          as: "categories",
+        },
+        {
+          model: SubCategory,
+          as: "subCategories",
+        },
+        {
+          model: WareHouse,
+          as: "wareHouse",
+        },
+        {
+          model: InventoryVertical,
+          as: "verticalSizes",
+        },
+        {
+          model: InventoryHorizontal,
+          as: "horizontalSizes",
+        },
+      ],
+    });
+
+    res.send(
+      SUCCESS(
+        "Successfully Updated!",
+        results
+      )
+    );
+  } catch (error) {
+    console.log(error);
+
+    res.send(ERROR(error.message));
+  }
+};
+
+// ======================================================
+// FIND ALL
+// ======================================================
 
 exports.find = async (req, res) => {
-    try {
-        const results = await Inventories.findAll({
-            attributes: [
-                'id',
-                'width',
-                'height',
-                'color',
-                'quantity',
-                'quality',
-                'price',
-                'categories_id',
-                'sub_categories_id',
-                'ware_house_id'
-            ],
-            include: [
-                {
-                    model: Category,
-                    as: "categories"
-                },
-                {
-                    model: SubCategory,
-                    as: "subCategories"
-                },
-                {
-                    model: wareHouse,
-                    as: "WareHouse"
-                }
-            ]
-        });
+  try {
+    const results = await Inventories.findAll({
+      include: [
+        {
+          model: Category,
+          as: "categories",
+        },
 
-        res.send(SUCCESS("Successfully!", results));
-    } catch (error) {
-        res.send(ERROR(error));
-    }
+        {
+          model: SubCategory,
+          as: "subCategories",
+        },
+
+        {
+          model: WareHouse,
+          as: "wareHouse",
+        },
+
+        {
+          model: InventoryVertical,
+          as: "verticalSizes",
+        },
+
+        {
+          model: InventoryHorizontal,
+          as: "horizontalSizes",
+        },
+      ],
+
+      order: [["id", "DESC"]],
+    });
+
+    res.send(
+      SUCCESS("Successfully!", results)
+    );
+  } catch (error) {
+    console.log(error);
+
+    res.send(ERROR(error.message));
+  }
 };
+
+
+
+// ======================================================
+// FIND BY PK
+// ======================================================
+
 exports.findByPk = async (req, res) => {
-    try {
-        const { id } = req.params
-        const results = await Inventories.findByPk(id)
-        res.send(SUCCESS("Successfully!", results))
-    } catch (error) {
-        res.send(ERROR(error))
-    }
-}
+  try {
+    const { id } = req.params;
 
+    const results = await Inventories.findByPk(
+      id,
+      {
+        include: [
+          {
+            model: Category,
+            as: "categories",
+          },
 
-exports.findBycategories = async (req, res) => {
-    try {
-        const { id } = req.params
-        const results = await Inventories.findAll({
-            attributes: [
-                'id',
-                'width',
-                'height',
-                'color',
-                'quantity',
-                'quality',
-                'price',
-                'categories_id',
-                'sub_categories_id'
-            ],
-            include: [
-                {
-                    model: Category,
-                    as: "categories"
-                },
-                {
-                    model: SubCategory,
-                    as: "subCategories"
-                },
-                {
-                    model: wareHouse,
-                    as: "WareHouse"
-                }
-            ],
-            where: {
-                categories_id: id
-            }
-        })
-        res.send(SUCCESS("Successfully!", results))
-    } catch (error) {
-        res.send(ERROR(error))
-    }
-}
+          {
+            model: SubCategory,
+            as: "subCategories",
+          },
 
+          {
+            model: WareHouse,
+            as: "wareHouse",
+          },
 
-exports.findBycategoriesAndSubCategories = async (req, res) => {
-    try {
-        const { cid, sid } = req.params
-        const results = await Inventories.findAll({
-            attributes: [
-                'id',
-                'width',
-                'height',
-                'color',
-                'quantity',
-                'quality',
-                'price',
-                'categories_id',
-                'sub_categories_id'
-            ],
-            include: [
-                {
-                    model: Category,
-                    as: "categories"
-                },
-                {
-                    model: SubCategory,
-                    as: "subCategories"
-                },
-                {
-                    model: wareHouse,
-                    as: "WareHouse"
-                }
-            ],
-            where: {
-                categories_id: cid,
-                sub_categories_id: sid
-            }
-        })
-        res.send(SUCCESS("Successfully!", results))
-    } catch (error) {
-        res.send(ERROR(error))
-    }
-}
+          {
+            model: InventoryVertical,
+            as: "verticalSizes",
+          },
 
+          {
+            model: InventoryHorizontal,
+            as: "horizontalSizes",
+          },
+        ],
+      }
+    );
 
-exports.calculate = async (req, res) => {
-    try {
-        const { catId, scatId } = req.params;
+    res.send(
+      SUCCESS("Successfully!", results)
+    );
+  } catch (error) {
+    console.log(error);
 
-        console.log(req.params);
-
-        const quntites = await Inventories.sum('quantity', {
-            where: {
-                categories_id: catId,
-                sub_categories_id: scatId,
-                width: null,
-                height: null
-            }
-        });
-
-        const totalHeight = await Inventories.sum('height', {
-            where: {
-                categories_id: catId,
-                sub_categories_id: scatId,
-            }
-        });
-
-        const totalWidth = await Inventories.sum('width', {
-            where: {
-                categories_id: catId,
-                sub_categories_id: scatId,
-            }
-        });
-
-        res.json({
-            quntites: quntites,
-            height: totalHeight,
-            width: totalWidth
-        });
-    } catch (err) {
-        console.error(err);
-        res.send("failed");
-    }
+    res.send(ERROR(error.message));
+  }
 };
 
+// ======================================================
+// FIND BY CATEGORY
+// ======================================================
 
+exports.findBycategories = async (
+  req,
+  res
+) => {
+  try {
+    const { id } = req.params;
 
+    const results = await Inventories.findAll({
+      where: {
+        categories_id: id,
+      },
+
+      include: [
+        {
+          model: Category,
+          as: "categories",
+        },
+
+        {
+          model: SubCategory,
+          as: "subCategories",
+        },
+
+        {
+          model: WareHouse,
+          as: "wareHouse",
+        },
+
+        {
+          model: InventoryVertical,
+          as: "verticalSizes",
+        },
+
+        {
+          model: InventoryHorizontal,
+          as: "horizontalSizes",
+        },
+      ],
+
+      order: [["id", "DESC"]],
+    });
+
+    res.send(
+      SUCCESS("Successfully!", results)
+    );
+  } catch (error) {
+    console.log(error);
+
+    res.send(ERROR(error.message));
+  }
+};
+
+// ======================================================
+// FIND BY CATEGORY + SUBCATEGORY
+// ======================================================
+
+exports.findBycategoriesAndSubCategories =
+  async (req, res) => {
+    try {
+      const { cid, sid } = req.params;
+
+      const results =
+        await Inventories.findAll({
+          where: {
+            categories_id: cid,
+            sub_categories_id: sid,
+          },
+
+          include: [
+            {
+              model: Category,
+              as: "categories",
+            },
+
+            {
+              model: SubCategory,
+              as: "subCategories",
+            },
+
+            {
+              model: WareHouse,
+              as: "wareHouse",
+            },
+
+            {
+              model: InventoryVertical,
+              as: "verticalSizes",
+            },
+
+            {
+              model: InventoryHorizontal,
+              as: "horizontalSizes",
+            },
+          ],
+
+          order: [["id", "DESC"]],
+        });
+
+      res.send(
+        SUCCESS("Successfully!", results)
+      );
+    } catch (error) {
+      console.log(error);
+
+      res.send(ERROR(error.message));
+    }
+  };
+
+// ======================================================
+// COUNT ITEMS
+// ======================================================
+
+exports.countsItems = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const results = await Items.sum("qt", {
+      where: {
+        stock_id: id,
+      },
+    });
+
+    res.send(
+      SUCCESS("Successfully!", results || 0)
+    );
+  } catch (error) {
+    console.log(error);
+
+    res.send(ERROR(error.message));
+  }
+};
+
+// ======================================================
+// ITEMS
+// ======================================================
+
+exports.Items = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const results = await Items.findAll({
+      where: {
+        stock_id: id,
+      },
+    });
+
+    res.send(
+      SUCCESS("Successfully!", results)
+    );
+  } catch (error) {
+    console.log(error);
+
+    res.send(ERROR(error.message));
+  }
+};
+
+// ======================================================
+// DELETE
+// ======================================================
 
 exports.deletes = async (req, res) => {
-    try {
-        const { id } = req.params
-        const results = await Inventories.destroy({
-            where: {
-                id: id
-            }
-        })
-        res.send(SUCCESS("Successfully!", results))
-    } catch (error) {
-        res.send(ERROR(error))
-    }
-}
+  try {
+    const { id } = req.params;
+
+    await InventoryVertical.destroy({
+      where: {
+        inventory_id: id,
+      },
+    });
+
+    await InventoryHorizontal.destroy({
+      where: {
+        inventory_id: id,
+      },
+    });
+
+    const results = await Inventories.destroy({
+      where: {
+        id: id,
+      },
+    });
+
+    res.send(
+      SUCCESS(
+        "Successfully Deleted!",
+        results
+      )
+    );
+  } catch (error) {
+    console.log(error);
+
+    res.send(ERROR(error.message));
+  }
+};
+
+// ======================================================
+// CALCULATE
+// ======================================================
+
+exports.calculate = async (req, res) => {
+  try {
+    const { catId, scatId } = req.params;
+
+    const quantities =
+      await Inventories.sum("quantity", {
+        where: {
+          categories_id: catId,
+          sub_categories_id: scatId,
+        },
+      });
+
+    const totalHeight =
+      await Inventories.sum("height", {
+        where: {
+          categories_id: catId,
+          sub_categories_id: scatId,
+        },
+      });
+
+    const totalWidth =
+      await Inventories.sum("width", {
+        where: {
+          categories_id: catId,
+          sub_categories_id: scatId,
+        },
+      });
+
+    res.send(
+      SUCCESS("Successfully!", {
+        quantities: quantities || 0,
+        height: totalHeight || 0,
+        width: totalWidth || 0,
+      })
+    );
+  } catch (error) {
+    console.log(error);
+
+    res.send(ERROR(error.message));
+  }
+};

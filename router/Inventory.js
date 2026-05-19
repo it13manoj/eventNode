@@ -1,5 +1,5 @@
 const express = require("express");
-const { create, update, find, deletes, findByPk, findBycategories, findBycategoriesAndSubCategories, calculate } = require("../controller/Admin/Inventory");
+const { create, update, find, deletes, findByPk, findBycategories, findBycategoriesAndSubCategories, calculate ,countsItems, Items  } = require("../controller/Admin/Inventory");
 const Route = express.Router();
 
 
@@ -11,7 +11,8 @@ Route.get("/Inverntory/findByPk/:id", findByPk)
 Route.get("/Inverntory/findBycategories/:id", findBycategories)
 Route.get("/Inverntory/findBycategoriesAndSubCategories/:cid/:sid", findBycategoriesAndSubCategories)
 Route.get("/Inverntory/calculate/:catId/:scatId", calculate)
-
+Route.get("/Inverntory/items/calculate/:id", countsItems)
+Route.get("/Inverntory/items/find/:id", Items)
 
 
 module.exports = Route

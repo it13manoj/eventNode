@@ -8,7 +8,8 @@ const { PORT } = process.env
 const sequelize = require("./db/conenction");
 const users  = require("./router/index")
 const admin = require("./router/Admin")
-
+const exportFullDatabase = require("./config/exportFullDatabase");
+const { getDistances } = require("./controller/Admin/GeoCalculator");
 
 app.use(cors({
     origin:["http://localhost:5173"],
@@ -34,6 +35,7 @@ app.use("/api/v1/admin",admin.WareHouse)
 app.use("/api/v1/admin",admin.VehicleType)
 app.use("/api/v1/admin",admin.Vehicle)
 app.use("/api/v1/admin",admin.TeamAssign)
+app.post("/api/v1/distance", getDistances)
 
 
 

@@ -6,11 +6,12 @@ const { SUCCESS } = require("../../Response/Success")
 
 exports.create = async (req, res) => {
     try {
-        const { name, categories_id, code, description } = req.body
+        const { name, categories_id, code, description, is_enable } = req.body
         const subCategories = await SubCategories.create({
             name: name,
             categories_id: categories_id,
             code: code,
+            is_enable,
             description: description
         })
 
@@ -23,6 +24,7 @@ exports.create = async (req, res) => {
 exports.finds = async (req, res) => {
     try {
         const subCategories = await SubCategories.findAll({
+            order:[["id","desc"]],
             include: [
                 {
                     model: Category,
@@ -40,7 +42,7 @@ exports.findByid = async (req, res) => {
     try {
         const { id } = req.params
         const results = await SubCategories.findAll({
-            attributes: ['id', 'name', 'categories_id'],
+            attributes: ['id', 'name', 'categories_id','is_enable'],
             where: {
                 categories_id: id
             },
